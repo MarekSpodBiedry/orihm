@@ -146,11 +146,11 @@ function sprawdz(nr) {
   if (haslo === haslo1) {
     document.getElementById("alfabet").innerHTML = `
       Tak jest! Podano prawidłowe hasło: ${haslo}
-      <br><br><span class="reset" onclick="resetujGre()">JESZCZE RAZ?</span>`;
+      <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
   } else if (ile_skuch >= 9) {
     document.getElementById("alfabet").innerHTML = `
       Przegrana! Prawidłowe hasło: ${haslo}
-      <br><br><span class="reset" onclick="resetujGre()">JESZCZE RAZ?</span>`;
+      <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
   }
 }
 
