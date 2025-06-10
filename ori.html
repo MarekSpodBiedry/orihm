@@ -5,6 +5,7 @@
   <title>OriGameee</title>
   <link rel="icon" type="image/x-icon" href="https://www.freeiconspng.com/download/3339">
   <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&subset=latin,latin-ext" rel="stylesheet">
+  <script src="cookies.js"></script>
   <style>
     body {
       background-color: #000;
@@ -76,7 +77,7 @@
       z-index: 1000;
     }
 
-    #statistics-button, #settings-button {
+    #statistics-button, #settings-button, #switch-letter-counting-button, #settings-jump-to-haslo-input, #settings-jump-to-haslo-button {
       background-color: lightgray;
       color: #222;
       border: none;
@@ -88,8 +89,36 @@
       font-size: 15px;
     }
 
-    #statistics-button:hover, #settings-button:hover {
+
+
+    #statistics-button:hover, #settings-button:hover, #switch-letter-counting-button:hover, #settings-jump-to-haslo-button:hover {
       background-color: gray;
+    }
+
+    #settings-jump-to-haslo-input::-webkit-outer-spin-button,
+    #settings-jump-to-haslo-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .settings-button {
+      margin: 12px;
+    }
+
+    #settings-reset-haslo-button {
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 15px;
+    }
+
+    #settings-reset-haslo-button:hover {
+      background-color: darkred;
     }
 
     .popupOverlay {
@@ -114,7 +143,7 @@
       width: 400px;
       max-width: 90%;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      /*ADD A WHITE BORDER*/
+      border: 3px solid white;
     }
 
     .closePopup {
@@ -125,6 +154,7 @@
       border: none;
       font-size: 24px;
       cursor: pointer;
+      color: white;
     }
   </style>
 </head>
@@ -143,7 +173,7 @@
   <div class="popupContent">
     <button class="closePopup">&times;</button>
     <h2>Statistics</h2>
-    <p>Nic tu nie ma, pusto :(</p>
+    <p>Tutaj nadal nic nie ma...</p>
   </div>
 </div>
 
@@ -152,7 +182,9 @@
   <div class="popupContent">
     <button class="closePopup">&times;</button>
     <h2>Settings</h2>
-    <p>Co to za grzebanie, there's nothing here</p>
+    <button id="switch-letter-counting-button" class="settings-button" onclick="showCounts = !showCounts; wypiszHaslo()">LETTER COUNT</button><button id="settings-reset-haslo-button" class="settings-button" onclick="localStorage.removeItem('indexHasla'); location.reload()">RESET</button>
+    <input type="number" placeholder="# Hasła" id="settings-jump-to-haslo-input" class="settings-button"><button id="settings-jump-to-haslo-button" class="settings-button" onclick="jump()">Jump!</button>
+    <p></p>
   </div>
 </div>
 
@@ -209,7 +241,33 @@
     { tekst: "Kocham cię całym serduszkiem", kategoria: "B" },
     { tekst: "Zawsze wszędzie i tylko ciebie", kategoria: "B" },
     { tekst: "I love you the most in the whole world Ori", kategoria: "B" },
-    { tekst: "Miłego wisielca kochanie", kategoria: "B" }
+    { tekst: "Miłego wisielca kochanie", kategoria: "B" },
+    { tekst: "Hiszpania", kategoria: "kraje" },
+    { tekst: "Truskawka", kategoria: "owoce i warzywa" },
+    { tekst: "Mustang", kategoria: "samochody" },
+    { tekst: "Pies", kategoria: "zwierzęta" },
+    { tekst: "Banan", kategoria: "owoce i warzywa" },
+    { tekst: "BMW", kategoria: "samochody" },
+    { tekst: "Niemcy", kategoria: "kraje" },
+    { tekst: "Banan", kategoria: "owoce i warzywa" },
+    { tekst: "Krokodyl", kategoria: "zwierzęta" },
+    { tekst: "Pomarańcza", kategoria: "owoce i warzywa" },
+    { tekst: "Warszawa", kategoria: "miasta" },
+    { tekst: "Zebra", kategoria: "zwierzęta" },
+    { tekst: "Fiat", kategoria: "samochody" },
+    { tekst: "Słoń", kategoria: "zwierzęta" },
+    { tekst: "Kraków", kategoria: "miasta" },
+    { tekst: "Gdańsk", kategoria: "miasta" },
+    { tekst: "Wrocław", kategoria: "miasta" },
+    { tekst: "Pomarańcza", kategoria: "owoce i warzywa" },
+    { tekst: "Volkswagen", kategoria: "samochody" },
+    { tekst: "Włochy", kategoria: "kraje" },
+    { tekst: "Marchewka", kategoria: "owoce i warzywa" },
+    { tekst: "Kot", kategoria: "zwierzęta" },
+    { tekst: "Poznań", kategoria: "miasta" },
+    { tekst: "Francja", kategoria: "kraje" },
+    { tekst: "Polska", kategoria: "kraje" },
+    { tekst: "Mustang", kategoria: "samochody" }
   ];
 
   const litery = ["A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","Q","R","S","Ś","T","U","V","W","X","Y","Z","Ż","Ź"];
@@ -297,18 +355,32 @@
       document.getElementById("alfabet").innerHTML = `
         Tak jest! Podano prawidłowe hasło: ${haslo}
         <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+        indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+      localStorage.setItem("indexHasla", indexHasla);
     } else if (ile_skuch >= 9) {
       document.getElementById("alfabet").innerHTML = `
         Przegrana! Prawidłowe hasło: ${haslo}
         <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+      indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+      localStorage.setItem("indexHasla", indexHasla);
     }
   }
 
   function resetujGre() {
-    indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
-    localStorage.setItem("indexHasla", indexHasla);
     location.reload();
   }
+
+  function jump() {
+    const input = document.getElementById('settings-jump-to-haslo-input');
+    const index = parseInt(input.value, 10);
+
+    if (!isNaN(index) && index > 0 && index < hasla.length ) {
+      localStorage.setItem('indexHasla', index - 1);
+      location.reload();
+    } else {
+      alert("Wprowadź poprawny numer hasła.");
+    }
+  };
 
   window.onload = start;
 </script>
