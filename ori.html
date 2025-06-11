@@ -295,7 +295,7 @@
     let baseLine = `#${numer} (${kategoria}): ${haslo1}`;
     if (showCounts) {
       let counts = getWordLetterCounts(haslo);
-      baseLine += ' (' + counts.join(' ') + ')';
+      baseLine += ' (' + counts.join('&nbsp;') + ')';
     }
     document.getElementById("plansza").innerHTML = `<div style="user-select:none;">${baseLine}</div>`;
   }
