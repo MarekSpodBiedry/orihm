@@ -77,7 +77,7 @@
       z-index: 1000;
     }
 
-    #statistics-button, #settings-button, #switch-letter-counting-button, #settings-jump-to-haslo-input, #settings-jump-to-haslo-button {
+    #statistics-button, #settings-button, .settings-button {
       background-color: lightgray;
       color: #222;
       border: none;
@@ -91,7 +91,7 @@
 
 
 
-    #statistics-button:hover, #settings-button:hover, #switch-letter-counting-button:hover, #settings-jump-to-haslo-button:hover {
+    #statistics-button:hover, #settings-button:hover, #switch-letter-counting-button:hover, #settings-jump-to-haslo-button:hover, #settings-custom-haslo-button:hover {
       background-color: gray;
     }
 
@@ -184,6 +184,7 @@
     <h2>Settings</h2>
     <button id="switch-letter-counting-button" class="settings-button" onclick="showCounts = !showCounts; wypiszHaslo()">LETTER COUNT</button><button id="settings-reset-haslo-button" class="settings-button" onclick="localStorage.removeItem('indexHasla'); location.reload()">RESET</button>
     <input type="number" placeholder="# Hasła" id="settings-jump-to-haslo-input" class="settings-button"><button id="settings-jump-to-haslo-button" class="settings-button" onclick="jump()">Jump!</button>
+    <input type="text" placeholder="Twoje hasło" id="settings-custom-haslo-input" class="settings-button"><button id="settings-custom-haslo-button" class="settings-button" onclick="start(custom = 1)">Go!</button>
     <p></p>
   </div>
 </div>
@@ -275,6 +276,8 @@
   let indexHasla, haslo, kategoria, haslo1, ile_skuch = 0;
   let showCounts = false;
 
+  let isCustom = false;
+
   String.prototype.ustawZnak = function (miejsce, znak) {
     return this.substr(0, miejsce) + znak + this.substr(miejsce + 1);
   };
@@ -291,34 +294,54 @@
   }
 
   function wypiszHaslo() {
+  let baseLine = "";
+  if (isCustom) {
+    baseLine = `(${kategoria}): ${haslo1}`;
+  } else {
     let numer = indexHasla + 1;
-    let baseLine = `#${numer} (${kategoria}): ${haslo1}`;
-    if (showCounts) {
-      let counts = getWordLetterCounts(haslo);
-      baseLine += ' (' + counts.join('&nbsp;') + ')';
-    }
-    document.getElementById("plansza").innerHTML = `<div style="user-select:none;">${baseLine}</div>`;
+    baseLine = `#${numer} (${kategoria}): ${haslo1}`;
   }
+  
+  if (showCounts) {
+    let counts = getWordLetterCounts(haslo);
+    baseLine += ' (' + counts.join('&nbsp;') + ')';
+  }
+  document.getElementById("plansza").innerHTML = `<div style="user-select:none;">${baseLine}</div>`;
+}
 
-  function start() {
+  function start(custom = 0) {
+  if (custom == 1){
+    haslo = document.getElementById('settings-custom-haslo-input').value.toUpperCase();
+    kategoria = "CUSTOM";
+    isCustom = true;
+  } else {
     indexHasla = localStorage.getItem("indexHasla");
     indexHasla = indexHasla === null ? 0 : parseInt(indexHasla);
+    isCustom = false;
+
+    // Fix: Validate indexHasla boundaries
+    if (isNaN(indexHasla) || indexHasla < 0 || indexHasla >= hasla.length) {
+      indexHasla = 0;
+      localStorage.setItem("indexHasla", indexHasla);
+    }
+
     haslo = hasla[indexHasla].tekst.toUpperCase();
     kategoria = hasla[indexHasla].kategoria;
-    haslo1 = haslo.replace(/[^\s]/g, "‑");
-    ile_skuch = 0;
-    localStorage.setItem("indexHasla", indexHasla);
-
-    let tresc = "";
-    litery.forEach((litera, i) => {
-      tresc += `<div class="litera" onclick="sprawdz(${i})" id="lit${i}">${litera}</div>`;
-      if ((i + 1) % 7 === 0) tresc += '<div style="clear:both;"></div>';
-    });
-
-    document.getElementById("alfabet").innerHTML = tresc;
-    document.getElementById("szubienica").innerHTML = `<img src="https://zagraj-w-wisielca.pl/img/s0.gif" alt="" />`;
-    wypiszHaslo();
   }
+  
+  haslo1 = haslo.replace(/[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "‑");
+  ile_skuch = 0;
+
+  let tresc = "";
+  litery.forEach((litera, i) => {
+    tresc += `<div class="litera" onclick="sprawdz(${i})" id="lit${i}">${litera}</div>`;
+    if ((i + 1) % 7 === 0) tresc += '<div style="clear:both;"></div>';
+  });
+
+  document.getElementById("alfabet").innerHTML = tresc;
+  document.getElementById("szubienica").innerHTML = `<img src="https://zagraj-w-wisielca.pl/img/s0.gif" alt="" />`;
+  wypiszHaslo();
+}
 
   function sprawdz(nr) {
     let trafiona = false;
@@ -352,18 +375,25 @@
     wypiszHaslo();
 
     if (haslo === haslo1) {
-      document.getElementById("alfabet").innerHTML = `
-        Tak jest! Podano prawidłowe hasło: ${haslo}
-        <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
-        indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
-      localStorage.setItem("indexHasla", indexHasla);
-    } else if (ile_skuch >= 9) {
-      document.getElementById("alfabet").innerHTML = `
-        Przegrana! Prawidłowe hasło: ${haslo}
-        <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
-      indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
-      localStorage.setItem("indexHasla", indexHasla);
-    }
+  document.getElementById("alfabet").innerHTML = `
+    Tak jest! Podano prawidłowe hasło: ${haslo}
+    <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+  
+  if (!isCustom) {
+    indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+    localStorage.setItem("indexHasla", indexHasla);
+  }
+} else if (ile_skuch >= 9) {
+  document.getElementById("alfabet").innerHTML = `
+    Przegrana! Prawidłowe hasło: ${haslo}
+    <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+  
+  if (!isCustom) {
+    indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+    localStorage.setItem("indexHasla", indexHasla);
+  }
+}
+
   }
 
   function resetujGre() {
@@ -382,26 +412,29 @@
     }
   };
 
-  window.onload = start;
+  window.onload = () => start(0);
+
 
   document.addEventListener('keydown', (event) => {
-    const key = event.key.toLowerCase();
+  if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) return; // ignore shortcuts
 
-    const polishMap = {
-      'ą': 'ą', 'ć': 'ć', 'ę': 'ę', 'ł': 'ł', 'ń': 'ń',
-      'ó': 'ó', 'ś': 'ś', 'ź': 'ź', 'ż': 'ż'
-    };
+  // Don't process keypresses if focus is on input or textarea
+  const active = document.activeElement;
+  if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
 
-    const validLetter = /^[a-ząćęłńóśźż]$/i.test(key);
-    if (!validLetter) return;
+  const key = event.key.toLowerCase();
 
-    const buttons = document.querySelectorAll('.litera');
-    buttons.forEach(btn => {
-      if (btn.innerText.toLowerCase() === key && !btn.disabled) {
-        btn.click();
-      }
-    });
+  const validLetter = /^[a-ząćęłńóśźż]$/i.test(key);
+  if (!validLetter) return;
+
+  const buttons = document.querySelectorAll('.litera');
+  buttons.forEach(btn => {
+    if (btn.innerText.toLowerCase() === key && !btn.disabled) {
+      btn.click();
+    }
   });
+});
+
 </script>
 
 </body>
