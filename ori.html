@@ -383,6 +383,25 @@
   };
 
   window.onload = start;
+
+  document.addEventListener('keydown', (event) => {
+    const key = event.key.toLowerCase();
+
+    const polishMap = {
+      'ą': 'ą', 'ć': 'ć', 'ę': 'ę', 'ł': 'ł', 'ń': 'ń',
+      'ó': 'ó', 'ś': 'ś', 'ź': 'ź', 'ż': 'ż'
+    };
+
+    const validLetter = /^[a-ząćęłńóśźż]$/i.test(key);
+    if (!validLetter) return;
+
+    const buttons = document.querySelectorAll('.litera');
+    buttons.forEach(btn => {
+      if (btn.innerText.toLowerCase() === key && !btn.disabled) {
+        btn.click();
+      }
+    });
+  });
 </script>
 
 </body>
