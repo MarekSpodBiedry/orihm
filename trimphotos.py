@@ -29,7 +29,7 @@ def process_directory(directory, target_size):
     for filename in os.listdir(directory):
         file_path = os.path.join(directory, filename)
         if any(filename.lower().endswith(ext) for ext in supported_extensions):
-            output_path = os.path.join(directory, f"resized_{filename}")
+            output_path = os.path.join(directory, f"r{filename}")
             trim_image(file_path, target_size, output_path)
 directory = input("Enter the directory path: ")
 target_size = int(input("Enter the target size (for square): "))
