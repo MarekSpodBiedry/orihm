@@ -182,9 +182,9 @@
   <div class="popupContent">
     <button class="closePopup">&times;</button>
     <h2>Settings</h2>
-    <button id="switch-letter-counting-button" class="settings-button" onclick="/*showCounts = !showCounts; wypiszHaslo()*/">LETTER COUNT</button><button id="settings-reset-haslo-button" class="settings-button" onclick="localStorage.removeItem('indexHasla'); location.reload()">RESET</button>
+    <button id="switch-letter-counting-button" class="settings-button" onclick="/*showCounts = !showCounts; wypiszHaslo()*/">LETTER COUNT</button><button id="settings-reset-haslo-button" class="settings-button" onclick="localStorage.clear(); location.reload()">RESET</button>
     <input type="number" placeholder="# Hasła" id="settings-jump-to-haslo-input" class="settings-button"><button id="settings-jump-to-haslo-button" class="settings-button" onclick="jump()">Jump!</button>
-    <input type="password" placeholder="Twoje hasło" id="settings-custom-haslo-input" class="settings-button"><button id="settings-custom-haslo-button" class="settings-button" onclick="start(custom = 1)">Go!</button>
+    <input type="password" placeholder="Twoje hasło" id="settings-custom-haslo-input" class="settings-button"><button id="settings-custom-haslo-button" class="settings-button" onclick="start(custom = 1); document.getElementById('settingsOverlay').querySelector('.closePopup').click();">Go!</button>
     <p></p>
   </div>
 </div>
@@ -424,8 +424,30 @@
   }
 }
 
-  window.onload = () => start(0);
-  updateLetterCountButton()
+  window.onload = function() {
+      // Existing functions
+      start(0);
+      updateLetterCountButton();
+
+      // Add event listeners for the inputs
+      const jumpInput = document.getElementById('settings-jump-to-haslo-input');
+      const customHasloInput = document.getElementById('settings-custom-haslo-input');
+
+      // Event listener for Jump to Haslo input
+      jumpInput.addEventListener('keydown', function(event) {
+        if (event.key === "Enter") {
+          jump(); // Call the jump function
+        }
+      });
+
+      // Event listener for Custom Haslo input
+      customHasloInput.addEventListener('keydown', function(event) {
+        if (event.key === "Enter") {
+          start(1); // Call the start function with custom input
+          document.getElementById('settingsOverlay').querySelector('.closePopup').click();
+        }
+      });
+    }
 
   document.getElementById('switch-letter-counting-button').onclick = () => {
   showCounts = !showCounts;
