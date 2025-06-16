@@ -447,6 +447,13 @@
           document.getElementById('settingsOverlay').querySelector('.closePopup').click();
         }
       });
+
+      document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+          document.getElementById('settingsOverlay').querySelector('.closePopup').click();
+          document.getElementById('statsOverlay').querySelector('.closePopup').click();
+        }
+      })
     }
 
   document.getElementById('switch-letter-counting-button').onclick = () => {
