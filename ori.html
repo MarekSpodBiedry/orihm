@@ -377,7 +377,7 @@
     if (haslo === haslo1) {
   document.getElementById("alfabet").innerHTML = `
     Tak jest! Podano prawidłowe hasło: ${haslo}
-    <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+    <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
   
   if (!isCustom) {
     indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
@@ -386,7 +386,7 @@
 } else if (ile_skuch >= 9) {
   document.getElementById("alfabet").innerHTML = `
     Przegrana! Prawidłowe hasło: ${haslo}
-    <br><br><span class="reset" onclick="resetujGre()">NEXT?</span>`;
+    <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
   
   if (!isCustom) {
     indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
@@ -452,8 +452,10 @@
         if (event.key === "Escape") {
           document.getElementById('settingsOverlay').querySelector('.closePopup').click();
           document.getElementById('statsOverlay').querySelector('.closePopup').click();
+        } else if (event.key === " " || event.key === "Enter") {
+          document.getElementById('nextButton').click();
         }
-      })
+      });
     }
 
   document.getElementById('switch-letter-counting-button').onclick = () => {
