@@ -105,7 +105,7 @@
       margin: 12px;
     }
 
-    #settings-reset-haslo-button {
+    #settings-reset-button, #settings-reset-confirm-button {
       background-color: red;
       color: white;
       border: none;
@@ -117,7 +117,7 @@
       font-size: 15px;
     }
 
-    #settings-reset-haslo-button:hover {
+    #settings-reset-button:hover, #settings-reset-confirm-button:hover {
       background-color: darkred;
     }
 
@@ -156,6 +156,47 @@
       cursor: pointer;
       color: white;
     }
+    
+    .reset-popup-content {
+      max-width: 350px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .reset-close {
+      align-self: flex-end;
+    }
+    .reset-title {
+      margin: 0 0 16px 0;
+      align-self: center;
+    }
+    .reset-checkboxes {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .reset-checkbox-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4px;
+      width: 100%;
+    }
+    .reset-checkbox-row input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    .reset-checkbox-row label {
+      text-align: center;
+      width: 160px;
+    }
+    .reset-btn {
+      align-self: center;
+      margin-top: 8px;
+    }
+    
   </style>
 </head>
 <body>
@@ -182,10 +223,41 @@
   <div class="popupContent">
     <button class="closePopup">&times;</button>
     <h2>Settings</h2>
-    <button id="switch-letter-counting-button" class="settings-button" onclick="/*showCounts = !showCounts; wypiszHaslo()*/">LETTER COUNT</button><button id="settings-reset-haslo-button" class="settings-button" onclick="localStorage.clear(); location.reload()">RESET</button>
+    <button id="switch-letter-counting-button" class="settings-button" onclick="/*showCounts = !showCounts; wypiszHaslo()*/">LETTER COUNT</button><button id="settings-reset-button" class="settings-button" onclick="/*localStorage.clear(); location.reload()*/">RESET</button>
     <input type="number" placeholder="# Hasła" id="settings-jump-to-haslo-input" class="settings-button"><button id="settings-jump-to-haslo-button" class="settings-button" onclick="jump()">Jump!</button>
     <input type="password" placeholder="Twoje hasło" id="settings-custom-haslo-input" class="settings-button"><button id="settings-custom-haslo-button" class="settings-button" onclick="start(custom = 1); document.getElementById('settingsOverlay').querySelector('.closePopup').click();">Go!</button>
     <p></p>
+
+    <div id="resetOverlay" class="popupOverlay">
+      <div class="popupContent reset-popup-content">
+      <button class="closePopup reset-close">&times;</button>
+      <h3 class="reset-title">Reset:</h3>
+      <div class="reset-checkboxes">
+        <div class="reset-checkbox-row">
+        <input type="checkbox" id="reset-cookies-checkbox" checked>
+        <label for="reset-cookies-checkbox">Cookies confirmation</label>
+        </div>
+        <div class="reset-checkbox-row">
+        <input type="checkbox" id="reset-index-checkbox" checked>
+        <label for="reset-index-checkbox">Index hasła</label>
+        </div>
+        <div class="reset-checkbox-row">
+        <input type="checkbox" id="reset-settings-checkbox" checked>
+        <label for="reset-settings-checkbox">Ustawienia</label>
+        </div>
+        <div class="reset-checkbox-row">
+        <input type="checkbox" id="reset-stats-checkbox" disabled>
+        <label for="reset-stats-checkbox">Statystyki</label>
+        </div>
+        <div class="reset-checkbox-row">
+        <input type="checkbox" id="reset-else-checkbox">
+        <label for="reset-else-checkbox">Wszystko</label>
+        </div>
+        <button id="settings-reset-confirm-button" class="settings-button reset-btn" onclick="reset()">RESET</button>
+      </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -199,21 +271,32 @@
 
 <script>
   // Modal Logic
+  let resetShown = false;
   const statsButton = document.getElementById('statistics-button');
   const settingsButton = document.getElementById('settings-button');
+  const resetButton = document.getElementById('settings-reset-button');
   const statsOverlay = document.getElementById('statsOverlay');
   const settingsOverlay = document.getElementById('settingsOverlay');
+  const resetOverlay = document.getElementById('resetOverlay');
 
   statsButton.addEventListener('click', () => statsOverlay.style.display = 'flex');
   settingsButton.addEventListener('click', () => settingsOverlay.style.display = 'flex');
+  resetButton.addEventListener('click', () => {resetOverlay.style.display = 'flex'; resetShown = true;});
 
+  // General overlays (including resetOverlay, with special handling for resetShown)
   document.querySelectorAll('.popupOverlay').forEach(overlay => {
     const content = overlay.querySelector('.popupContent');
     const closeBtn = overlay.querySelector('.closePopup');
 
-    closeBtn.addEventListener('click', () => overlay.style.display = 'none');
+    closeBtn.addEventListener('click', () => {
+      overlay.style.display = 'none';
+      if (overlay.id === 'resetOverlay') resetShown = false;
+    });
     overlay.addEventListener('click', (e) => {
-      if (!content.contains(e.target)) overlay.style.display = 'none';
+      if (!content.contains(e.target)) {
+        overlay.style.display = 'none';
+        if (overlay.id === 'resetOverlay') resetShown = false;
+      }
     });
   });
 
@@ -450,8 +533,12 @@
 
       document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
+          if (resetShown === true) {
+            document.getElementById('resetOverlay').querySelector('.closePopup').click();
+            resetShown = false;
+          } else {
           document.getElementById('settingsOverlay').querySelector('.closePopup').click();
-          document.getElementById('statsOverlay').querySelector('.closePopup').click();
+          document.getElementById('statsOverlay').querySelector('.closePopup').click();}
         } else if (event.key === " " || event.key === "Enter") {
           document.getElementById('nextButton').click();
         }
@@ -484,6 +571,26 @@
     }
   });
 });
+
+function reset() {
+  if (document.getElementById("reset-cookies-checkbox").checked) {
+    localStorage.removeItem("cookieConsent");
+  }
+  if (document.getElementById("reset-index-checkbox").checked) {
+    localStorage.removeItem("indexHasla");
+  }
+  if (document.getElementById("reset-settings-checkbox").checked) {
+    localStorage.removeItem("showCounts");
+  }
+  if (document.getElementById("reset-stats-checkbox").checked) {
+    /*localStorage.removeItem("");*/
+    /*stats are WIP*/
+  }
+  if (document.getElementById("reset-else-checkbox").checked) {
+    localStorage.clear();
+  }
+  location.reload();
+}
 
 </script>
 
