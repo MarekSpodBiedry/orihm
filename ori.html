@@ -90,7 +90,7 @@
       vertical-align: middle;
     }
 
-    #statistics-button:hover, #settings-button:hover, #settings-jump-to-haslo-button:hover, #settings-custom-haslo-button:hover {
+    #statistics-button:hover, #settings-button:hover, .settings-button-hover:hover {
       background-color: gray;
     }
 
@@ -115,6 +115,18 @@
 
     #settings-reset-button:hover, #settings-reset-confirm-button:hover {
       background-color: darkred;
+    }
+
+    #settings-custom-haslo-input, #settings-custom-kategoria-input, #settings-export-haslo-input, #settings-export-kategoria-input {
+      width: 72px;
+    }
+
+    #settings-custom-haslo-input, #settings-export-haslo-input {
+      margin-right: 0px;
+    }
+
+    #settings-custom-kategoria-input, #settings-export-kategoria-input {
+      margin-left: 1px;
     }
 
     .popupOverlay {
@@ -223,9 +235,22 @@
     <button id="switch-hasla-list-button" class="settings-button" style="height: 38px; padding: 9px 20px;">👁️</button>
     <button id="show-hidden-ori-hasla-button" class="settings-button" style="height: 38px; padding: 9px 20px;">🔒</button></div>
     <input type="number" placeholder="# Hasła" id="settings-jump-to-haslo-input" class="settings-button">
-    <button id="settings-jump-to-haslo-button" class="settings-button" onclick="jump()">Jump!</button>
-    <input type="password" placeholder="Twoje hasło" id="settings-custom-haslo-input" class="settings-button">
-    <button id="settings-custom-haslo-button" class="settings-button" onclick="start(custom = 1); document.querySelector('#settingsOverlay .closePopup').click();">Go!</button>
+    <button id="settings-jump-to-haslo-button" class="settings-button settings-button-hover" onclick="jump()">Jump!</button>
+
+    <input type="password" placeholder="Hasło" id="settings-custom-haslo-input" class="settings-button">
+    <input type="text" placeholder="Kategoria" id="settings-custom-kategoria-input" class="settings-button">
+    <button id="settings-custom-haslo-button" class="settings-button settings-button-hover" onclick="start(custom = 1); document.querySelector('#settingsOverlay .closePopup').click();">Ustaw</button>
+    
+    <div id="export1">
+    <input type="password" placeholder="Hasło" id="settings-export-haslo-input" class="settings-button">
+    <input type="text" placeholder="Kategoria" id="settings-export-kategoria-input" class="settings-button">
+    <button id="settings-export-haslo-button" class="settings-button settings-button-hover" onclick="exportHaslo();">Export</button>
+    </div>
+
+    <div id="export2">
+    <input type="text" id="settings-export-copy-input" class="settings-button" disabled>
+    <button id="settings-export-copy-button" class="settings-button settings-button-hover" onclick="copyHaslo();">Copy</button>
+    </div>
 
     <p></p>
 
@@ -272,6 +297,12 @@
 </div>
 
 <script>
+
+function sleep(s) {
+  return new Promise(resolve => setTimeout(resolve, s*1000));
+}
+
+
   // Modal Logic
   let resetShown = false;
   const statsButton = document.getElementById('statistics-button');
@@ -393,26 +424,26 @@
 
   const urlParams = new URLSearchParams(window.location.search);
 
-  if (localStorage.getItem("indexHasla") > hasla.length - 1) {
-    localStorage.setItem("indexHasla", hasla.length - 1);
-  }
+if (localStorage.getItem("indexHasla") > hasla.length - 1) {
+  localStorage.setItem("indexHasla", hasla.length - 1);
+}
 
-  String.prototype.ustawZnak = function (miejsce, znak) {
-    return this.substr(0, miejsce) + znak + this.substr(miejsce + 1);
-  };
+String.prototype.ustawZnak = function (miejsce, znak) {
+  return this.substr(0, miejsce) + znak + this.substr(miejsce + 1);
+};
 
-  function getWordLetterCounts(phrase) {
-    let words = phrase.split(' ');
-    return words.map(w => {
-      let count = 0;
-      for (let ch of w) {
-        if (litery.includes(ch.toUpperCase())) count++;
-      }
-      return count;
-    });
-  }
+function getWordLetterCounts(phrase) {
+  let words = phrase.split(' ');
+  return words.map(w => {
+    let count = 0;
+    for (let ch of w) {
+      if (litery.includes(ch.toUpperCase())) count++;
+    }
+    return count;
+  });
+}
 
-  function wypiszHaslo() {
+function wypiszHaslo() {
   let baseLine = "";
   if (isCustom) {
     baseLine = `(${kategoria}): ${haslo1}`;
@@ -428,10 +459,13 @@
   document.getElementById("plansza").innerHTML = `<div style="user-select:none;">${baseLine}</div>`;
 }
 
-  function start(custom = 0) {
+function start(custom = 0) {
   if (custom == 1){
     haslo = document.getElementById('settings-custom-haslo-input').value.toUpperCase();
+    kategoria = document.getElementById('settings-custom-kategoria-input').value;
+    if (kategoria === "") {
     kategoria = "CUSTOM";
+    }
     isCustom = true;
   } else if (custom == 2){
     haslo = decodeURIComponent(atob(urlParams.get('ih'))).toUpperCase();
@@ -470,39 +504,39 @@
   wypiszHaslo();
 }
 
-  function sprawdz(nr) {
-    let trafiona = false;
-    const lit = litery[nr];
-    for (let i = 0; i < haslo.length; i++) {
-      if (haslo[i] === lit) {
-        haslo1 = haslo1.ustawZnak(i, lit);
-        trafiona = true;
-      }
+function sprawdz(nr) {
+  let trafiona = false;
+  const lit = litery[nr];
+  for (let i = 0; i < haslo.length; i++) {
+    if (haslo[i] === lit) {
+      haslo1 = haslo1.ustawZnak(i, lit);
+      trafiona = true;
     }
+  }
 
-    const el = document.getElementById("lit" + nr);
-    el.style.cursor = "default";
-    el.onclick = null;
+  const el = document.getElementById("lit" + nr);
+  el.style.cursor = "default";
+  el.onclick = null;
 
-    if (trafiona) {
-      yes.play();
-      el.style.background = "#003300";
-      el.style.color = "#00C000";
-      el.style.border = "3px solid #00C000";
-    } else {
-      no.play();
-      el.style.background = "#330000";
-      el.style.color = "#C00000";
-      el.style.border = "3px solid #C00000";
-      ile_skuch++;
-      const obraz = `img/szubienice/default/s${ile_skuch}.gif`;
-      document.getElementById("szubienica").innerHTML = `<img src="${obraz}" alt="" />`;
-    }
+  if (trafiona) {
+    yes.play();
+    el.style.background = "#003300";
+    el.style.color = "#00C000";
+    el.style.border = "3px solid #00C000";
+  } else {
+    no.play();
+    el.style.background = "#330000";
+    el.style.color = "#C00000";
+    el.style.border = "3px solid #C00000";
+    ile_skuch++;
+    const obraz = `img/szubienice/default/s${ile_skuch}.gif`;
+    document.getElementById("szubienica").innerHTML = `<img src="${obraz}" alt="" />`;
+  }
 
-    wypiszHaslo();
+  wypiszHaslo();
 
-    if (haslo === haslo1) {
-  document.getElementById("alfabet").innerHTML = `
+  if (haslo === haslo1) {
+    document.getElementById("alfabet").innerHTML = `
     Tak jest! Podano prawidłowe hasło: ${haslo}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
   
@@ -510,51 +544,89 @@
     indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
     localStorage.setItem("indexHasla", indexHasla);
   }
-} else if (ile_skuch >= 9) {
-  document.getElementById("alfabet").innerHTML = `
+  } else if (ile_skuch >= 9) {
+    document.getElementById("alfabet").innerHTML = `
     Przegrana! Prawidłowe hasło: ${haslo}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
   
   if (!isCustom) {
     indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
     localStorage.setItem("indexHasla", indexHasla);
-  }
+  }}}
+
+function resetujGre() {
+  if (urlParams.has('ih') && urlParams.has('ik'))  {
+    window.location.replace(window.location.pathname);
+  } else {
+  location.reload();
+}
 }
 
+function modifyIndexHasla(difference) {
+  newIndex = parseInt(localStorage.getItem('indexHasla')) + difference;
+  if (newIndex < 0) {
+    newIndex = 0;
   }
+  /*console.log(`Changing indexHasla from ${localStorage.getItem('indexHasla')} to ${newIndex}`);*/
+  localStorage.setItem('indexHasla', newIndex); 
+}
 
-  function resetujGre() {
-    if (urlParams.has('ih') && urlParams.has('ik'))  {
-      window.location.replace(window.location.pathname);
-    } else {
+function jump() {
+  const input = document.getElementById('settings-jump-to-haslo-input');
+  const index = parseInt(input.value, 10);
+
+  if (!isNaN(index) && index >= 0 && index <= hasla.length) {
+    /*(index == localStorage.getItem('indexHasla'))*/
+    localStorage.setItem('indexHasla', index - 1);
     location.reload();
+  } else {
+    alert("Wprowadź poprawny numer hasła.");
+  }
+};
+
+function exportHaslo() {
+  const haslo = document.getElementById('settings-export-haslo-input').value;
+  const kategoria = document.getElementById('settings-export-kategoria-input').value;
+  const button = document.getElementById('settings-export-haslo-button');
+  const copyInput = document.getElementById('settings-export-copy-input');
+  const exportDiv = document.getElementById('export1');
+  const copyDiv = document.getElementById('export2');
+
+  if (haslo) {
+    if (kategoria !== "") {
+      const url = ('https://marekspodbiedry.github.io/orihm/ori.html?ih='+btoa(encodeURIComponent(haslo))+'&ik='+btoa(encodeURIComponent(kategoria)));
+      copyInput.value = url;
+      exportDiv.style.display = 'none';
+      copyDiv.style.display = 'block';
+    } else {
+      const url = ('https://marekspodbiedry.github.io/orihm/ori.html?ih='+btoa(encodeURIComponent(haslo)));
+      copyInput.value = url;
+      exportDiv.style.display = 'none';
+      copyDiv.style.display = 'block';
+    }
   }
 }
 
-  function modifyIndexHasla(oldIndex) {
-    newIndex = parseInt(localStorage.getItem('indexHasla')) + oldIndex;
-    if (newIndex < 0) {
-      newIndex = 0;
-    }
-    /*console.log(`Changing indexHasla from ${localStorage.getItem('indexHasla')} to ${newIndex}`);*/
-    localStorage.setItem('indexHasla', newIndex); 
-  }
+function copyHaslo() {
+  const copyInput = document.getElementById('settings-export-copy-input');
+  const exportDiv = document.getElementById('export1');
+  const copyDiv = document.getElementById('export2');
+  const button = document.getElementById('settings-export-haslo-button');
 
-  function jump() {
-    const input = document.getElementById('settings-jump-to-haslo-input');
-    const index = parseInt(input.value, 10);
+  copyInput.select();
+  copyInput.setSelectionRange(0, 99999);
 
-    if (!isNaN(index) && index >= 0 && index <= hasla.length) {
-      /*(index == localStorage.getItem('indexHasla'))*/
-      localStorage.setItem('indexHasla', index - 1);
-      location.reload();
-    } else {
-      alert("Wprowadź poprawny numer hasła.");
-    }
-  };
+  navigator.clipboard.writeText(copyInput.value);
+  exportDiv.style.display = 'block';
+  copyDiv.style.display = 'none';
+  button.textContent = 'Copied!';
+  sleep(1).then(() => {
+    button.textContent = 'Export';
+  });
+}
 
-  showCounts = localStorage.getItem('showCounts') === 'true';
-  function updateLetterCountButton() {
+showCounts = localStorage.getItem('showCounts') === 'true';
+function updateLetterCountButton() {
   const btn = document.getElementById('switch-letter-counting-button');
   btn.style.backgroundColor = showCounts ? 'lightgreen' : 'lightcoral';
   btn.style.color = '#222';
@@ -625,10 +697,15 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
       }
       updateLetterCountButton();
       updateHaslaListButtons();
+      document.getElementById('export2').style.display = 'none';
 
       // Add event listeners for the inputs
       const jumpInput = document.getElementById('settings-jump-to-haslo-input');
       const customHasloInput = document.getElementById('settings-custom-haslo-input');
+      const customKategoriaInput = document.getElementById('settings-custom-kategoria-input');
+      
+      const exportHasloInput = document.getElementById('settings-export-haslo-input');
+      const exportKategoriaInput = document.getElementById('settings-export-kategoria-input');
 
       // Event listener for Jump to Haslo input
       jumpInput.addEventListener('keydown', function(event) {
@@ -638,11 +715,21 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
       });
 
       // Event listener for Custom Haslo input
-      customHasloInput.addEventListener('keydown', function(event) {
-        if (event.key === "Enter") {
-          start(1); // Call the start function with custom input
-          document.getElementById('settingsOverlay').querySelector('.closePopup').click();
-        }
+      [customHasloInput, customKategoriaInput].forEach(input => {
+        input.addEventListener('keydown', function(event) {
+          if (event.key === "Enter") {
+        start(1);
+        document.getElementById('settingsOverlay').querySelector('.closePopup').click();
+          }
+        });
+      });
+
+      [exportHasloInput, exportKategoriaInput].forEach(input => {
+        input.addEventListener('keydown', function(event) {
+          if (event.key === "Enter") {
+        exportHaslo();
+          }
+        });
       });
 
       document.addEventListener('keydown', function(event) {
