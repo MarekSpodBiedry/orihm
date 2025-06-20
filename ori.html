@@ -395,6 +395,8 @@
 
   let isCustom = false;
 
+  const urlParams = new URLSearchParams(window.location.search);
+
   if (localStorage.getItem("indexHasla") > hasla.length - 1) {
     localStorage.setItem("indexHasla", hasla.length - 1);
   }
@@ -434,6 +436,10 @@
   if (custom == 1){
     haslo = document.getElementById('settings-custom-haslo-input').value.toUpperCase();
     kategoria = "CUSTOM";
+    isCustom = true;
+  } else if (custom == 2){
+    haslo = atob(urlParams.get('ih')).toUpperCase();
+    kategoria = atob(urlParams.get('ik'));
     isCustom = true;
   } else {
     indexHasla = localStorage.getItem("indexHasla");
@@ -606,7 +612,11 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
 
   window.onload = function() {
       // Existing functions
-      start(0);
+      if (urlParams.has('ih') && urlParams.has('ik')) {
+        start(2);
+      } else {
+        start(0);
+      }
       updateLetterCountButton();
       updateHaslaListButtons();
 
