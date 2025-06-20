@@ -370,8 +370,12 @@
     { tekst: "Lodówka", kategoria: "przedmioty" }
   ];
 
-  let currentMode = 'normal';
-  currentMode = localStorage.getItem('hasla-list'); 
+  let currentMode = localStorage.getItem('hasla-list');
+  if (currentMode === null) {
+    localStorage.setItem('hasla-list', 'normal');
+    currentMode = 'normal';
+  }
+  
   if (currentMode === 'old') {
     hasla = [...firsthasla, ...normalHasla];
   } else if (currentMode === 'ori') {
