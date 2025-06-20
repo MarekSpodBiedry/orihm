@@ -375,7 +375,11 @@
     localStorage.setItem('hasla-list', 'normal');
     currentMode = 'normal';
   }
-  
+
+  if (localStorage.getItem('indexHasla') === null) {
+      localStorage.setItem('indexHasla', '0');
+    }
+
   if (currentMode === 'old') {
     hasla = [...firsthasla, ...normalHasla];
   } else if (currentMode === 'ori') {
@@ -518,7 +522,6 @@
   }
 
   function modifyIndexHasla(oldIndex) {
-    localStorage.getItem('indexHasla');
     newIndex = parseInt(localStorage.getItem('indexHasla')) + oldIndex;
     if (newIndex < 0) {
       newIndex = 0;
