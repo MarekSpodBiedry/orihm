@@ -438,8 +438,12 @@
     kategoria = "CUSTOM";
     isCustom = true;
   } else if (custom == 2){
-    haslo = atob(urlParams.get('ih')).toUpperCase();
-    kategoria = atob(urlParams.get('ik'));
+    haslo = decodeURIComponent(atob(urlParams.get('ih'))).toUpperCase();
+    kategoria = decodeURIComponent(atob(urlParams.get('ik')));
+    isCustom = true;
+  } else if (custom == 3) {
+    haslo = decodeURIComponent(atob(urlParams.get('ih'))).toUpperCase();
+    kategoria = 'Import';
     isCustom = true;
   } else {
     indexHasla = localStorage.getItem("indexHasla");
@@ -524,8 +528,12 @@
   }
 
   function resetujGre() {
+    if (urlParams.has('ih') && urlParams.has('ik'))  {
+      window.location.replace(window.location.pathname);
+    } else {
     location.reload();
   }
+}
 
   function modifyIndexHasla(oldIndex) {
     newIndex = parseInt(localStorage.getItem('indexHasla')) + oldIndex;
@@ -614,6 +622,8 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
       // Existing functions
       if (urlParams.has('ih') && urlParams.has('ik')) {
         start(2);
+      } else if (urlParams.has('ih')) {
+        start(3);
       } else {
         start(0);
       }
