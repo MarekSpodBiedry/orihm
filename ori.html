@@ -796,7 +796,7 @@ function sleep(s) {
   {"tekst": "Ik hou van jou", "kategoria": "❤", "jezyk": "Holenderski"},
   {"tekst": "Jeg elsker deg", "kategoria": "❤", "jezyk": "Norweski"},
   {"tekst": "Jag alskar dig", "kategoria": "❤", "jezyk": "Szwedzki (Jag&nbsp;älskar&nbsp;dig)"},
-  {"tekst": "S' agapo", "kategoria": "❤", "jezyk": "Grecki(Σ' αγαπώ)"},
+  {"tekst": "S' agapo", "kategoria": "❤", "jezyk": "Grecki (Σ'&nbsp;αγαπώ)"},
   {"tekst": "Seni seviyorum", "kategoria": "❤", "jezyk": "Turecki"},
   {"tekst": "Mina rakastan sinua", "kategoria": "❤", "jezyk": "Fiński (Minä&nbsp;rakastan&nbsp;sinua)"},
   {"tekst": "Volim te", "kategoria": "❤", "jezyk": "Chorwacki"},
@@ -1233,6 +1233,7 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
           document.getElementById('nextButton').click();
         }
       });
+      document.getElementById("settings-jump-to-haslo-input").value = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
     }
 
   document.getElementById('switch-letter-counting-button').onclick = () => {
