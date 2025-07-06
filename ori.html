@@ -1233,7 +1233,7 @@ oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchT
           document.getElementById('nextButton').click();
         }
       });
-      document.getElementById("settings-jump-to-haslo-input").value = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
+      document.getElementById("settings-jump-to-haslo-input").placeholder = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
     }
 
   document.getElementById('switch-letter-counting-button').onclick = () => {
