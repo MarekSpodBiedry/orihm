@@ -867,12 +867,14 @@ if (localStorage.getItem('indexHasla') === null) {
   localStorage.setItem('indexHasla', '0');
 }
 
-if (currentMode === 'old') {
-  hasla = [...firsthasla, ...normalHasla];
-} else if (currentMode === 'ori') {
-  hasla = [...oriGinal, ...firsthasla, ...normalHasla];
-} else {
-  hasla = normalHasla;
+function setMode() {
+  if (currentMode === 'old') {
+    hasla = [...firsthasla, ...normalHasla];
+  } else if (currentMode === 'ori') {
+    hasla = [...oriGinal, ...firsthasla, ...normalHasla];
+  } else {
+    hasla = normalHasla;
+  }
 }
 
 const litery = ["A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","Q","R","S","Ś","T","U","V","W","X","Y","Z","Ż","Ź"];
@@ -1046,9 +1048,11 @@ function sprawdz(nr) {
 
 function resetujGre() {
   if (urlParams.has('ih') && urlParams.has('ik'))  {
-    window.location.replace(window.location.pathname);
+    /*window.location.replace(window.location.pathname);*/
+    start();
   } else {
-  location.reload();
+    /*location.reload();*/
+    start();
   }
 }
 
@@ -1068,7 +1072,10 @@ function jump() {
   if (!isNaN(index) && index >= 1 && index <= hasla.length) {
     /*(index == localStorage.getItem('indexHasla'))*/
     localStorage.setItem('indexHasla', index - 1);
-    location.reload();
+    /*location.reload();*/
+    start();
+    document.getElementById("settings-jump-to-haslo-input").value = "";
+    document.getElementById("settings-jump-to-haslo-input").placeholder = index;
   } else {
     alert("Wprowadź poprawny numer hasła.");
   }
@@ -1133,41 +1140,56 @@ function updateHaslaListButtons() {
   oriModeButton.textContent = currentMode === 'ori' ? '🔓' : '🔒';
 }
 
+const lengthOriGinal = oriGinal.length
+const lengthFirstHasla = firsthasla.length
+
 function switchToOld() {
-  if (currentMode === 'ori') {
-    modifyIndexHasla(-16);
-  } else {
-    modifyIndexHasla(23);
+  if (indexHasla !== 0) {
+    if (currentMode === 'ori') {
+      modifyIndexHasla((0-lengthOriGinal));
+    } else {
+      modifyIndexHasla(lengthFirstHasla);
+    }
   }
   currentMode = 'old';
   localStorage.setItem('hasla-list', currentMode);
   updateHaslaListButtons();
-  location.reload();
+  /*location.reload();*/
+  setMode();
+  start();
 }
 
 function switchToNormal() {
-  if (currentMode === 'old') {
-    modifyIndexHasla(-23);
-  } else {
-    modifyIndexHasla(-39);
+  if (indexHasla !== 0) {
+    if (currentMode === 'old') {
+      modifyIndexHasla((0-lengthFirstHasla));
+    } else {
+      modifyIndexHasla((0-(lengthFirstHasla + lengthOriGinal)));
+    }
   }
   currentMode = 'normal';
   localStorage.setItem('hasla-list', currentMode);
   updateHaslaListButtons();
-  location.reload();
+  /*location.reload();*/
+  setMode();
+  start();
 }
 
 function switchToOri() {
   if (prompt('Password:') === OriGinalPassword) {
-    if (currentMode === 'old') {
-      modifyIndexHasla(16);
-    } else {
-      modifyIndexHasla(39);
+    if (indexHasla !== 0) {
+      if (currentMode === 'old') {
+        modifyIndexHasla(lengthOriGinal);
+      } else {
+        modifyIndexHasla((lengthFirstHasla + lengthOriGinal));
+      }
     }
     currentMode = 'ori';
     localStorage.setItem('hasla-list', currentMode);
     updateHaslaListButtons();
-    location.reload();
+    /*location.reload();*/
+    setMode();
+    start();
   } else {
     alert('Incorrect password!');
   }
@@ -1177,7 +1199,8 @@ oldModeButton.onclick = () => currentMode === 'old' ? switchToNormal() : switchT
 oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchToOri();
 
 window.onload = function() {
-  // Existing functions
+  // Game and settings functions
+  setMode();
   if (urlParams.has('ih') && urlParams.has('ik')) {
     start(2);
   } else if (urlParams.has('ih')) {
@@ -1200,7 +1223,7 @@ window.onload = function() {
   // Event listener for Jump to Haslo input
   jumpInput.addEventListener('keydown', function(event) {
     if (event.key === "Enter") {
-      jump(); // Call the jump function
+      jump();
     }
   });
 
@@ -1214,6 +1237,7 @@ window.onload = function() {
     });
   });
 
+  // Event listener for Export Haslo input
   [exportHasloInput, exportKategoriaInput].forEach(input => {
     input.addEventListener('keydown', function(event) {
       if (event.key === "Enter") {
@@ -1222,6 +1246,7 @@ window.onload = function() {
     });
   });
 
+  // Event listener for the whole document: ESC, next haslo with space or ENTER
   document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
       if (resetShown === true) {
@@ -1231,9 +1256,10 @@ window.onload = function() {
         document.getElementById('settingsOverlay').querySelector('.closePopup').click();
         document.getElementById('statsOverlay').querySelector('.closePopup').click();}
     } else if (event.key === " " || event.key === "Enter") {
-      document.getElementById('nextButton').click();
+      document.getElementById('nextButton')?.click();
     }
   });
+  // Set the placeholder of the Jump!
   document.getElementById("settings-jump-to-haslo-input").placeholder = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
 }
 
