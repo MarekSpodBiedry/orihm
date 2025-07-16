@@ -5,6 +5,7 @@
   <title>OriGameee</title>
   <link rel="icon" type="image/x-icon" href="img/favicon.png">
   <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&subset=latin,latin-ext" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="cookies.js"></script>
   <style>
     body {
@@ -775,7 +776,7 @@ const normalHasla = [
   {"tekst": "Fiołek", "kategoria": "rośliny"},
   {"tekst": "Statystyka", "kategoria": "matma"},
   {"tekst": "Flet", "kategoria": "instrumenty"},
-  {"tekst": "Pi", "kategoria": "matma <3"},
+  {"tekst": "Pi", "kategoria": "matma <3", "fireworks": "pi"},
   {"tekst": "Notatnik", "kategoria": "przedmioty"},
   {"tekst": "Jazda na rowerze", "kategoria": "sport"},
   {"tekst": "Długopis", "kategoria": "przedmioty"},
@@ -876,6 +877,7 @@ function setMode() {
     hasla = normalHasla;
   }
 }
+setMode();
 
 const litery = ["A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","Q","R","S","Ś","T","U","V","W","X","Y","Z","Ż","Ź"];
 
@@ -1013,6 +1015,9 @@ function sprawdz(nr) {
   wypiszHaslo();
 
   if (haslo === haslo1) {
+    if (typeof hasla[indexHasla].fireworks !== "undefined") {
+      fireworks(hasla[indexHasla].fireworks);
+    }
     if (jezyk !== '') {
       document.getElementById("alfabet").innerHTML = `
     Tak jest! Podano prawidłowe hasło: ${haslo} - ${jezyk}
@@ -1029,6 +1034,9 @@ function sprawdz(nr) {
     }
 
   } else if (ile_skuch >= 9) {
+    if (typeof hasla[indexHasla].fireworks !== "undefined") {
+      fireworks(hasla[indexHasla].fireworks);
+    }
     if (jezyk !== '') {
       document.getElementById("alfabet").innerHTML = `
     Przegrana! Prawidłowe hasło: ${haslo} - ${jezyk}
@@ -1309,6 +1317,44 @@ function reset() {
     localStorage.clear();
   }
   location.reload();
+}
+
+function fireworks(type) {
+  if (type == "pi") {
+    var scalar = 2;
+    var pi = confetti.shapeFromText({
+      text: 'π',
+      scalar,
+      color: 'white'
+    });
+
+    var defaults = {
+      spread: 360,
+      ticks: 200,
+      gravity: 0,
+      decay: 0.96,
+      startVelocity: 10,
+      shapes: [pi],
+      scalar
+    };
+
+    function shoot() {
+      confetti({
+        ...defaults,
+        particleCount: 30
+      });
+      confetti({
+        ...defaults,
+        particleCount: 40,
+        flat: true
+      });
+    }
+
+    setTimeout(shoot, 0);
+    setTimeout(shoot, 100);
+    setTimeout(shoot, 200);
+    setTimeout(shoot, 300);
+  }
 }
 
 </script>
