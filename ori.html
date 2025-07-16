@@ -297,94 +297,93 @@
 </div>
 
 <script>
-
 function sleep(s) {
   return new Promise(resolve => setTimeout(resolve, s*1000));
 }
 
 
-  // Modal Logic
-  let resetShown = false;
-  const statsButton = document.getElementById('statistics-button');
-  const settingsButton = document.getElementById('settings-button');
-  const resetButton = document.getElementById('settings-reset-button');
-  const statsOverlay = document.getElementById('statsOverlay');
-  const settingsOverlay = document.getElementById('settingsOverlay');
-  const resetOverlay = document.getElementById('resetOverlay');
+// Modal Logic
+let resetShown = false;
+const statsButton = document.getElementById('statistics-button');
+const settingsButton = document.getElementById('settings-button');
+const resetButton = document.getElementById('settings-reset-button');
+const statsOverlay = document.getElementById('statsOverlay');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const resetOverlay = document.getElementById('resetOverlay');
 
-  statsButton.addEventListener('click', () => statsOverlay.style.display = 'flex');
-  settingsButton.addEventListener('click', () => settingsOverlay.style.display = 'flex');
-  resetButton.addEventListener('click', () => {resetOverlay.style.display = 'flex'; resetShown = true;});
+statsButton.addEventListener('click', () => statsOverlay.style.display = 'flex');
+settingsButton.addEventListener('click', () => settingsOverlay.style.display = 'flex');
+resetButton.addEventListener('click', () => {resetOverlay.style.display = 'flex'; resetShown = true;});
 
-  // General overlays (including resetOverlay, with special handling for resetShown)
-  document.querySelectorAll('.popupOverlay').forEach(overlay => {
-    const content = overlay.querySelector('.popupContent');
-    const closeBtn = overlay.querySelector('.closePopup');
+// General overlays (including resetOverlay, with special handling for resetShown)
+document.querySelectorAll('.popupOverlay').forEach(overlay => {
+  const content = overlay.querySelector('.popupContent');
+  const closeBtn = overlay.querySelector('.closePopup');
 
-    closeBtn.addEventListener('click', () => {
+  closeBtn.addEventListener('click', () => {
+    overlay.style.display = 'none';
+    if (overlay.id === 'resetOverlay') resetShown = false;
+  });
+  overlay.addEventListener('click', (e) => {
+    if (!content.contains(e.target)) {
       overlay.style.display = 'none';
       if (overlay.id === 'resetOverlay') resetShown = false;
-    });
-    overlay.addEventListener('click', (e) => {
-      if (!content.contains(e.target)) {
-        overlay.style.display = 'none';
-        if (overlay.id === 'resetOverlay') resetShown = false;
-      }
-    });
+    }
   });
+});
 
-  // Game Logic
-  const yes = new Audio('audio/yes.mp3');
-  const no = new Audio('audio/no.mp3');
-  
-  let hasla = [{tekst: "OJĆ, BŁĄD HASEŁ", kategoria: "ERROR"}];
+// Game Logic
+const yes = new Audio('audio/yes.mp3');
+const no = new Audio('audio/no.mp3');
 
-  const oriGinal = [
-    { tekst: "Dzień dobry Droga Żono", kategoria: "B" },
-    { tekst: "Cieszę się że cię mam", kategoria: "B" },
-    { tekst: "Minął rok", kategoria: "B" },
-    { tekst: "Od tamtego cudownego dnia", kategoria: "B" },
-    { tekst: "Na lotnisku", kategoria: "B" },
-    { tekst: "Gdy złączyła nas miłość", kategoria: "B" },
-    { tekst: "Życzę ci abyś była zawsze szczęśliwa", kategoria: "B" },
-    { tekst: "Zdrowa i pogodna jak słonko", kategoria: "B" },
-    { tekst: "Żebyś miała siłe zwiedzać świat", kategoria: "B" },
-    { tekst: "I życie", kategoria: "B" },
-    { tekst: "Myśl o mnie skarbie", kategoria: "B" },
-    { tekst: "Śnij o mnie kotku", kategoria: "B" },
-    { tekst: "Kocham cię całym serduszkiem", kategoria: "B" },
-    { tekst: "Zawsze wszędzie i tylko ciebie", kategoria: "B" },
-    { tekst: "I love you the most in the whole world Ori", kategoria: "B" },
-    { tekst: "Miłego wisielca kochanie", kategoria: "B" }
-  ];
+let hasla = [{tekst: "OJĆ, BŁĄD HASEŁ", kategoria: "ERROR"}];
 
-  const firsthasla = [
-    { tekst: "Hiszpania", kategoria: "kraje" },
-    { tekst: "Truskawka", kategoria: "owoce i warzywa" },
-    { tekst: "Mustang", kategoria: "samochody" },
-    { tekst: "Pies", kategoria: "zwierzęta" },
-    { tekst: "Banan", kategoria: "owoce i warzywa" },
-    { tekst: "BMW", kategoria: "samochody" },
-    { tekst: "Niemcy", kategoria: "kraje" },
-    { tekst: "Krokodyl", kategoria: "zwierzęta" },
-    { tekst: "Pomarańcza", kategoria: "owoce i warzywa" },
-    { tekst: "Warszawa", kategoria: "miasta" },
-    { tekst: "Zebra", kategoria: "zwierzęta" },
-    { tekst: "Fiat", kategoria: "samochody" },
-    { tekst: "Słoń", kategoria: "zwierzęta" },
-    { tekst: "Kraków", kategoria: "miasta" },
-    { tekst: "Gdańsk", kategoria: "miasta" },
-    { tekst: "Wrocław", kategoria: "miasta" },
-    { tekst: "Volkswagen", kategoria: "samochody" },
-    { tekst: "Włochy", kategoria: "kraje" },
-    { tekst: "Marchewka", kategoria: "owoce i warzywa" },
-    { tekst: "Kot", kategoria: "zwierzęta" },
-    { tekst: "Poznań", kategoria: "miasta" },
-    { tekst: "Francja", kategoria: "kraje" },
-    { tekst: "Polska", kategoria: "kraje" }
-  ];
+const oriGinal = [
+  { tekst: "Dzień dobry Droga Żono", kategoria: "B" },
+  { tekst: "Cieszę się że cię mam", kategoria: "B" },
+  { tekst: "Minął rok", kategoria: "B" },
+  { tekst: "Od tamtego cudownego dnia", kategoria: "B" },
+  { tekst: "Na lotnisku", kategoria: "B" },
+  { tekst: "Gdy złączyła nas miłość", kategoria: "B" },
+  { tekst: "Życzę ci abyś była zawsze szczęśliwa", kategoria: "B" },
+  { tekst: "Zdrowa i pogodna jak słonko", kategoria: "B" },
+  { tekst: "Żebyś miała siłe zwiedzać świat", kategoria: "B" },
+  { tekst: "I życie", kategoria: "B" },
+  { tekst: "Myśl o mnie skarbie", kategoria: "B" },
+  { tekst: "Śnij o mnie kotku", kategoria: "B" },
+  { tekst: "Kocham cię całym serduszkiem", kategoria: "B" },
+  { tekst: "Zawsze wszędzie i tylko ciebie", kategoria: "B" },
+  { tekst: "I love you the most in the whole world Ori", kategoria: "B" },
+  { tekst: "Miłego wisielca kochanie", kategoria: "B" }
+];
 
-  const normalHasla = [
+const firsthasla = [
+  { tekst: "Hiszpania", kategoria: "kraje" },
+  { tekst: "Truskawka", kategoria: "owoce i warzywa" },
+  { tekst: "Mustang", kategoria: "samochody" },
+  { tekst: "Pies", kategoria: "zwierzęta" },
+  { tekst: "Banan", kategoria: "owoce i warzywa" },
+  { tekst: "BMW", kategoria: "samochody" },
+  { tekst: "Niemcy", kategoria: "kraje" },
+  { tekst: "Krokodyl", kategoria: "zwierzęta" },
+  { tekst: "Pomarańcza", kategoria: "owoce i warzywa" },
+  { tekst: "Warszawa", kategoria: "miasta" },
+  { tekst: "Zebra", kategoria: "zwierzęta" },
+  { tekst: "Fiat", kategoria: "samochody" },
+  { tekst: "Słoń", kategoria: "zwierzęta" },
+  { tekst: "Kraków", kategoria: "miasta" },
+  { tekst: "Gdańsk", kategoria: "miasta" },
+  { tekst: "Wrocław", kategoria: "miasta" },
+  { tekst: "Volkswagen", kategoria: "samochody" },
+  { tekst: "Włochy", kategoria: "kraje" },
+  { tekst: "Marchewka", kategoria: "owoce i warzywa" },
+  { tekst: "Kot", kategoria: "zwierzęta" },
+  { tekst: "Poznań", kategoria: "miasta" },
+  { tekst: "Francja", kategoria: "kraje" },
+  { tekst: "Polska", kategoria: "kraje" }
+];
+
+const normalHasla = [
   {"tekst": "Książka", "kategoria": "przedmioty"},
   {"tekst": "Komputer", "kategoria": "przedmioty"},
   {"tekst": "Telefon", "kategoria": "przedmioty"},
@@ -858,39 +857,38 @@ function sleep(s) {
   {"tekst": "Aishitemasu", "kategoria": "❤", "jezyk": "Japoński (formalnie)"}
 ];
 
-  let currentMode = localStorage.getItem('hasla-list');
-  if (currentMode === null) {
-    localStorage.setItem('hasla-list', 'normal');
-    currentMode = 'normal';
-  }
+let currentMode = localStorage.getItem('hasla-list');
+if (currentMode === null) {
+  localStorage.setItem('hasla-list', 'normal');
+  currentMode = 'normal';
+}
 
-  if (localStorage.getItem('indexHasla') === null) {
-      localStorage.setItem('indexHasla', '0');
-    }
+if (localStorage.getItem('indexHasla') === null) {
+  localStorage.setItem('indexHasla', '0');
+}
 
-  if (currentMode === 'old') {
-    hasla = [...firsthasla, ...normalHasla];
-  } else if (currentMode === 'ori') {
-    hasla = [...oriGinal, ...firsthasla, ...normalHasla];
-  } else {
-    hasla = normalHasla;
-  }
+if (currentMode === 'old') {
+  hasla = [...firsthasla, ...normalHasla];
+} else if (currentMode === 'ori') {
+  hasla = [...oriGinal, ...firsthasla, ...normalHasla];
+} else {
+  hasla = normalHasla;
+}
 
-  const litery = ["A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","Q","R","S","Ś","T","U","V","W","X","Y","Z","Ż","Ź"];
+const litery = ["A","Ą","B","C","Ć","D","E","Ę","F","G","H","I","J","K","L","Ł","M","N","Ń","O","Ó","P","Q","R","S","Ś","T","U","V","W","X","Y","Z","Ż","Ź"];
 
-  let indexHasla, haslo, kategoria, haslo1, ile_skuch = 0;
-  let showCounts = false;
+let indexHasla, haslo, kategoria, haslo1, ile_skuch = 0;
+let showCounts = false;
 
-  let isCustom = false;
+let isCustom = false;
 
-  const urlParams = new URLSearchParams(window.location.search);
+const urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.has('set-index')) {
   const index = parseInt(urlParams.get('set-index')) - 1;
   if (!isNaN(index) && index >= 0 && index < hasla.length) {
     localStorage.setItem("indexHasla", index);
     window.location.replace(window.location.pathname);
-
   }
 }
 
@@ -1018,37 +1016,40 @@ function sprawdz(nr) {
     Tak jest! Podano prawidłowe hasło: ${haslo} - ${jezyk}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
     } else {
-    document.getElementById("alfabet").innerHTML = `
+      document.getElementById("alfabet").innerHTML = `
     Tak jest! Podano prawidłowe hasło: ${haslo}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
-  }
-  
-  if (!isCustom) {
-    indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
-    localStorage.setItem("indexHasla", indexHasla);
-  }
+    }
+    
+    if (!isCustom) {
+      indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+      localStorage.setItem("indexHasla", indexHasla);
+    }
+
   } else if (ile_skuch >= 9) {
     if (jezyk !== '') {
       document.getElementById("alfabet").innerHTML = `
     Przegrana! Prawidłowe hasło: ${haslo} - ${jezyk}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
     } else {
-    document.getElementById("alfabet").innerHTML = `
+      document.getElementById("alfabet").innerHTML = `
     Przegrana! Prawidłowe hasło: ${haslo}
     <br><br><span id="nextButton" class="reset" onclick="resetujGre()">NEXT?</span>`;
     }
   
-  if (!isCustom) {
-    indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
-    localStorage.setItem("indexHasla", indexHasla);
-  }}}
+    if (!isCustom) {
+      indexHasla = (parseInt(indexHasla) + 1) % hasla.length;
+      localStorage.setItem("indexHasla", indexHasla);
+    }
+  }
+}
 
 function resetujGre() {
   if (urlParams.has('ih') && urlParams.has('ik'))  {
     window.location.replace(window.location.pathname);
   } else {
   location.reload();
-}
+  }
 }
 
 function modifyIndexHasla(difference) {
@@ -1064,7 +1065,7 @@ function jump() {
   const input = document.getElementById('settings-jump-to-haslo-input');
   const index = parseInt(input.value, 10);
 
-  if (!isNaN(index) && index >= 0 && index <= hasla.length) {
+  if (!isNaN(index) && index >= 1 && index <= hasla.length) {
     /*(index == localStorage.getItem('indexHasla'))*/
     localStorage.setItem('indexHasla', index - 1);
     location.reload();
@@ -1175,75 +1176,75 @@ function switchToOri() {
 oldModeButton.onclick = () => currentMode === 'old' ? switchToNormal() : switchToOld();
 oriModeButton.onclick = () => currentMode === 'ori' ? switchToNormal() : switchToOri();
 
-  window.onload = function() {
-      // Existing functions
-      if (urlParams.has('ih') && urlParams.has('ik')) {
-        start(2);
-      } else if (urlParams.has('ih')) {
-        start(3);
-      } else {
-        start(0);
-      }
-      updateLetterCountButton();
-      updateHaslaListButtons();
-      document.getElementById('export2').style.display = 'none';
+window.onload = function() {
+  // Existing functions
+  if (urlParams.has('ih') && urlParams.has('ik')) {
+    start(2);
+  } else if (urlParams.has('ih')) {
+    start(3);
+  } else {
+    start(0);
+  }
+  updateLetterCountButton();
+  updateHaslaListButtons();
+  document.getElementById('export2').style.display = 'none';
 
-      // Add event listeners for the inputs
-      const jumpInput = document.getElementById('settings-jump-to-haslo-input');
-      const customHasloInput = document.getElementById('settings-custom-haslo-input');
-      const customKategoriaInput = document.getElementById('settings-custom-kategoria-input');
-      
-      const exportHasloInput = document.getElementById('settings-export-haslo-input');
-      const exportKategoriaInput = document.getElementById('settings-export-kategoria-input');
+  // Add event listeners for the inputs
+  const jumpInput = document.getElementById('settings-jump-to-haslo-input');
+  const customHasloInput = document.getElementById('settings-custom-haslo-input');
+  const customKategoriaInput = document.getElementById('settings-custom-kategoria-input');
+  
+  const exportHasloInput = document.getElementById('settings-export-haslo-input');
+  const exportKategoriaInput = document.getElementById('settings-export-kategoria-input');
 
-      // Event listener for Jump to Haslo input
-      jumpInput.addEventListener('keydown', function(event) {
-        if (event.key === "Enter") {
-          jump(); // Call the jump function
-        }
-      });
+  // Event listener for Jump to Haslo input
+  jumpInput.addEventListener('keydown', function(event) {
+    if (event.key === "Enter") {
+      jump(); // Call the jump function
+    }
+  });
 
-      // Event listener for Custom Haslo input
-      [customHasloInput, customKategoriaInput].forEach(input => {
-        input.addEventListener('keydown', function(event) {
-          if (event.key === "Enter") {
+  // Event listener for Custom Haslo input
+  [customHasloInput, customKategoriaInput].forEach(input => {
+    input.addEventListener('keydown', function(event) {
+      if (event.key === "Enter") {
         start(1);
         document.getElementById('settingsOverlay').querySelector('.closePopup').click();
-          }
-        });
-      });
+      }
+    });
+  });
 
-      [exportHasloInput, exportKategoriaInput].forEach(input => {
-        input.addEventListener('keydown', function(event) {
-          if (event.key === "Enter") {
+  [exportHasloInput, exportKategoriaInput].forEach(input => {
+    input.addEventListener('keydown', function(event) {
+      if (event.key === "Enter") {
         exportHaslo();
-          }
-        });
-      });
+      }
+    });
+  });
 
-      document.addEventListener('keydown', function(event) {
-        if (event.key === "Escape") {
-          if (resetShown === true) {
-            document.getElementById('resetOverlay').querySelector('.closePopup').click();
-            resetShown = false;
-          } else {
-          document.getElementById('settingsOverlay').querySelector('.closePopup').click();
-          document.getElementById('statsOverlay').querySelector('.closePopup').click();}
-        } else if (event.key === " " || event.key === "Enter") {
-          document.getElementById('nextButton').click();
-        }
-      });
-      document.getElementById("settings-jump-to-haslo-input").placeholder = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
+  document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+      if (resetShown === true) {
+        document.getElementById('resetOverlay').querySelector('.closePopup').click();
+        resetShown = false;
+      } else {
+        document.getElementById('settingsOverlay').querySelector('.closePopup').click();
+        document.getElementById('statsOverlay').querySelector('.closePopup').click();}
+    } else if (event.key === " " || event.key === "Enter") {
+      document.getElementById('nextButton').click();
     }
+  });
+  document.getElementById("settings-jump-to-haslo-input").placeholder = parseInt(localStorage.getItem("indexHasla")) + 1 || 1;
+}
 
-  document.getElementById('switch-letter-counting-button').onclick = () => {
+document.getElementById('switch-letter-counting-button').onclick = () => {
   showCounts = !showCounts;
   localStorage.setItem('showCounts', showCounts);
   updateLetterCountButton();
   wypiszHaslo();
 };
 
-  document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) return; // ignore shortcuts
 
   // Don't process keypresses if focus is on input or textarea
